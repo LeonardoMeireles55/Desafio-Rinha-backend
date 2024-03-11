@@ -18,11 +18,9 @@ import java.time.LocalDateTime;
 public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final TransacaoRepository transacaoRepository;
-
     public static ResponseStatusException errorNotFound() {
         return new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
-
     public static ResponseStatusException errorUnprocessableEntity() {
         return new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
     }
