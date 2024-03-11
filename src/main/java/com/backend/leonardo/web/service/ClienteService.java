@@ -22,36 +22,41 @@ public class ClienteService {
     public static ResponseStatusException errorNotFound() {
         return new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
+
     public static ResponseStatusException errorUnprocessableEntity() {
         return new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
     public static boolean clientExistById(int id) {
         return id > 0 && id <= 5;
     }
+
     public ClienteService(TransacaoRepository transacaoRepository, ClienteRepository clienteRepository) {
         this.clienteRepository = clienteRepository;
         this.transacaoRepository = transacaoRepository;
     }
+
     public Mono<SaldoETransacoesDTO> getBalance(int id) {
         if (!clientExistById(id)) {
-        throw errorNotFound();
+            return Mono.error(errorNotFound());
         }
 
         Mono<RecuperarSaldoDTO> saldoMono = clienteRepository.findById(id)
-            .map(saldo -> new RecuperarSaldoDTO(saldo.getValor(), LocalDateTime.now(), saldo.getLimite()));
+                .map(saldo -> new RecuperarSaldoDTO(saldo.getValor(), LocalDateTime.now(), saldo.getLimite()));
 
         Flux<RetornoTransacaoCompletaDTO> transacoesFlux = transacaoRepository.findAllByClienteIdOrderByRealizadaEm(id)
                 .flatMap(transacao -> Flux.just(new RetornoTransacaoCompletaDTO(
                         transacao.getValor(),
                         transacao.getTipo(),
                         transacao.getDescricao(),
-                        transacao.getRealizadaEm()
-                )));
+                        transacao.getRealizadaEm())));
 
         return Mono.zip(saldoMono, transacoesFlux.collectList())
                 .map(tuple -> new SaldoETransacoesDTO(tuple.getT1(), tuple.getT2()));
     }
-    public Mono<RetornoTrasacaoDTO> createTransaction(int clienteIdParam, char tipoParam, int valorParam, String descricaoParam) {
+
+    public Mono<RetornoTrasacaoDTO> createTransaction(int clienteIdParam, char tipoParam, int valorParam,
+            String descricaoParam) {
         if (!clientExistById(clienteIdParam)) {
             return Mono.error(errorNotFound());
         }
@@ -60,11 +65,12 @@ public class ClienteService {
             return Mono.error(errorUnprocessableEntity());
         }
 
-        if (descricaoParam == null || descricaoParam.isEmpty() || descricaoParam.isBlank() || descricaoParam.length() > 10) {
+        if (descricaoParam == null || descricaoParam.isEmpty() || descricaoParam.isBlank()
+                || descricaoParam.length() > 10) {
             return Mono.error(errorUnprocessableEntity());
         }
         return transacaoRepository.transaction(clienteIdParam, tipoParam, valorParam, descricaoParam)
-        .map(result -> new RetornoTrasacaoDTO(result.limite(), result.saldo()))
-        .onErrorResume(exception -> Mono.error(errorUnprocessableEntity()));
+                .map(result -> new RetornoTrasacaoDTO(result.limite(), result.saldo()))
+                .onErrorResume(exception -> Mono.error(errorUnprocessableEntity()));
     }
 }

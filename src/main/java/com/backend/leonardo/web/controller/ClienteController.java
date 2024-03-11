@@ -23,8 +23,9 @@ public class ClienteController {
             @PathVariable Integer id,
             @Valid @RequestBody EfetuarTransacaoDTO transacaoDTO) {
 
-        return clienteService.createTransaction(id,transacaoDTO.tipo(), transacaoDTO.valor().intValue(),
-                 transacaoDTO.descricao());
+        return clienteService.createTransaction(id, transacaoDTO.tipo(),
+                transacaoDTO.valor().intValue(),
+                transacaoDTO.descricao());
     }
 
     @GetMapping("{id}/extrato")
@@ -32,4 +33,4 @@ public class ClienteController {
 
         return ResponseEntity.ok(clienteService.getBalance(id));
     }
-}    
+}

@@ -19,7 +19,7 @@ services:
      resources:
        limits:
          cpus: "0.58"
-         memory: "278MB"
+         memory: "200MB"
     restart: always
   api02:
     <<: *api
@@ -30,7 +30,7 @@ services:
        resources:
          limits:
            cpus: "0.57"
-           memory: "140MB"
+           memory: "200MB"
   nginx:
     image: nginx:latest
     volumes:
