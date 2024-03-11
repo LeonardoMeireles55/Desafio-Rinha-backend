@@ -6,20 +6,20 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-@Table("TRANSACAO")
+@Table("transacao")
 public class Transacao {
     @Id
-    int id;
+    private int id;
     @Column("id_cliente")
-    int clienteFk;
-    @Column("VALOR")
-    int valor;
-    @Column("TIPO")
-    char tipo;
-    @Column("DESCRICAO")
-    String descricao;
-    @Column("REALIZADA_EM")
-    LocalDateTime realizadaEm;
+    private int clienteFk;
+    @Column("valor")
+    private int valor;
+    @Column("tipo")
+    private char tipo;
+    @Column("descricao")
+    private String descricao;
+    @Column("realizada_em")
+    private LocalDateTime realizadaEm;
 
     public Transacao() {
     }

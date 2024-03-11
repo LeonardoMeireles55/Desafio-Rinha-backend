@@ -7,11 +7,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("cliente")
 public class Cliente {
     @Id
-    @Column("ID")
+    @Column("id")
     private int id;
-    @Column("SALDOS")
+    @Column("saldos")
     private int valor;
-    @Column("LIMITES")
+    @Column("limites")
     private int limite;
 
     public void setValor(int valor) {
