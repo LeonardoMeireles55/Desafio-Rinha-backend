@@ -6,7 +6,7 @@ import com.backend.leonardo.dto.RetornoTrasacaoDTO;
 import com.backend.leonardo.dto.SaldoETransacoesDTO;
 import com.backend.leonardo.web.repository.ClienteRepository;
 import com.backend.leonardo.web.repository.TransacaoRepository;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -18,14 +18,13 @@ import java.time.LocalDateTime;
 public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final TransacaoRepository transacaoRepository;
-    public static ResponseStatusException errorNotFound() {
-        return new ResponseStatusException(HttpStatus.NOT_FOUND);
+    private static ResponseStatusException errorNotFound() {
+        return new ResponseStatusException(HttpStatusCode.valueOf(404));
     }
-    public static ResponseStatusException errorUnprocessableEntity() {
-        return new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+    private static ResponseStatusException errorUnprocessableEntity() {
+        return new ResponseStatusException(HttpStatusCode.valueOf(422));
     }
-
-    public static boolean clientExistById(int id) {
+    private static boolean clientExistById(int id) {
         return id > 0 && id <= 5;
     }
 
@@ -40,14 +39,10 @@ public class ClienteService {
         }
 
         Mono<RecuperarSaldoDTO> saldoMono = clienteRepository.findById(id)
-                .map(saldo -> new RecuperarSaldoDTO(saldo.getValor(), LocalDateTime.now(), saldo.getLimite()));
+                .map(saldo -> new RecuperarSaldoDTO(saldo.valor(), LocalDateTime.now(), saldo.limite()));
 
-        Flux<RetornoTransacaoCompletaDTO> transacoesFlux = transacaoRepository.findAllByClienteIdOrderByRealizadaEm(id)
-                .flatMap(transacao -> Flux.just(new RetornoTransacaoCompletaDTO(
-                        transacao.getValor(),
-                        transacao.getTipo(),
-                        transacao.getDescricao(),
-                        transacao.getRealizadaEm())));
+        Flux<RetornoTransacaoCompletaDTO> transacoesFlux =
+                transacaoRepository.findAllByClienteIdOrderByRealizadaEm(id);
 
         return Mono.zip(saldoMono, transacoesFlux.collectList())
                 .map(tuple -> new SaldoETransacoesDTO(tuple.getT1(), tuple.getT2()));
@@ -68,7 +63,6 @@ public class ClienteService {
             return Mono.error(errorUnprocessableEntity());
         }
         return transacaoRepository.transaction(clienteIdParam, tipoParam, valorParam, descricaoParam)
-                .map(result -> new RetornoTrasacaoDTO(result.limite(), result.saldo()))
                 .onErrorResume(exception -> Mono.error(errorUnprocessableEntity()));
     }
 }

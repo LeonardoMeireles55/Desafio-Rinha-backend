@@ -18,8 +18,8 @@ services:
     deploy:
      resources:
        limits:
-         cpus: "0.58"
-         memory: "200MB"
+         cpus: "0.60"
+         memory: "210MB"
     restart: always
   api02:
     <<: *api
@@ -29,8 +29,8 @@ services:
     deploy:
        resources:
          limits:
-           cpus: "0.57"
-           memory: "200MB"
+           cpus: "0.60"
+           memory: "210MB"
   nginx:
     image: nginx:latest
     volumes:
@@ -43,8 +43,8 @@ services:
     deploy:
      resources:
        limits:
-         cpus: "0.10"
-         memory: "32MB"
+         cpus: "0.15"
+         memory: "40MB"
   db:
     image: postgres:latest
     logging:
@@ -54,7 +54,6 @@ services:
       - POSTGRES_DB=rinha
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=123
-#    command: "postgres -c synchronous_commit=0 -c full_page_writes=0"
     command: postgres -c checkpoint_timeout=600 -c max_wal_size=2096 -c synchronous_commit=0 -c full_page_writes=0 -c fsync=off -c check_function_bodies=false
     ports:
       - "5432:5432"
@@ -63,5 +62,5 @@ services:
     deploy:
      resources:
        limits:
-         cpus: "0.25"
-         memory: "118MB"
+         cpus: "0.15"
+         memory: "90MB"
