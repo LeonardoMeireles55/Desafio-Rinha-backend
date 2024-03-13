@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   api01: &api
+    image: leonardomeireles55/rinha_backend:lastest
     build:
       context: ./
       dockerfile: Dockerfile
@@ -16,10 +17,10 @@ services:
     depends_on:
       - db
     deploy:
-     resources:
-       limits:
-         cpus: "0.45"
-         memory: "210MB"
+      resources:
+        limits:
+          cpus: "0.45"
+          memory: "210MB"
     restart: always
   api02:
     <<: *api
@@ -27,10 +28,10 @@ services:
     ports:
       - "8082:8080"
     deploy:
-       resources:
-         limits:
-           cpus: "0.45"
-           memory: "210MB"
+      resources:
+        limits:
+          cpus: "0.45"
+          memory: "210MB"
   nginx:
     image: nginx:latest
     volumes:
@@ -41,10 +42,10 @@ services:
     ports:
       - "9999:9999"
     deploy:
-     resources:
-       limits:
-         cpus: "0.25"
-         memory: "40MB"
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "40MB"
   db:
     image: postgres:latest
     logging:
@@ -60,7 +61,7 @@ services:
     volumes:
       - ./sql/script.sql:/docker-entrypoint-initdb.d/script.sql
     deploy:
-     resources:
-       limits:
-         cpus: "0.35"
-         memory: "90MB"
+      resources:
+        limits:
+          cpus: "0.35"
+          memory: "90MB"
