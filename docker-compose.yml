@@ -3,10 +3,10 @@ version: "3.8"
 services:
   api01: &api
     image: leonardomeireles55/rinha_backend:lastest
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    working_dir: /usr/src/app
+    # build:
+    #   context: ./
+    #   dockerfile: Dockerfile
+    # working_dir: /usr/src/app
     hostname: api01
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://db:5432/rinha
