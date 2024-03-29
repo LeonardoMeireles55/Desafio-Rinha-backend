@@ -2,16 +2,20 @@ version: "3.8"
 
 services:
   api01: &api
-    image: leonardomeireles55/rinha_backend:lastest
-    # build:
-    #   context: ./
-    #   dockerfile: Dockerfile
-    # working_dir: /usr/src/app
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    working_dir: /usr/src/app
     hostname: api01
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://db:5432/rinha
       - SPRING_R2DBC_USERNAME=admin
       - SPRING_R2DBC_PASSWORD=123
+      # - SPRING_THREADS_VIRTUAL_ENABLED=true
+      - JAVA_TOOL_OPTIONS=-XX:+UseSerialGC -XX:MaxRAM=225m
+      # - SPRING_MAIN_LAZY_INITIALIZATION=true
+      # - SPRING.R2DBC_POOL_MAX-SIZE=10
+      # - SPRING.R2DBC_POOL_MIN-IDLE=5
     ports:
       - "8081:8080"
     depends_on:
@@ -19,19 +23,18 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.45"
-          memory: "210MB"
-    restart: always
+          cpus: "0.70"
+          memory: "225MB"
   api02:
     <<: *api
     hostname: api02
-    ports:
-      - "8082:8080"
     deploy:
       resources:
         limits:
-          cpus: "0.45"
-          memory: "210MB"
+          cpus: "0.65"
+          memory: "225MB"
+    ports:
+      - "8082:8080"
   nginx:
     image: nginx:latest
     volumes:
@@ -41,15 +44,13 @@ services:
       - api02
     ports:
       - "9999:9999"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: "40MB"
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "0.05"
+    #       memory: "30MB"
   db:
     image: postgres:latest
-    logging:
-      driver: none
     hostname: db
     environment:
       - POSTGRES_DB=rinha
@@ -60,8 +61,11 @@ services:
       - "5432:5432"
     volumes:
       - ./sql/script.sql:/docker-entrypoint-initdb.d/script.sql
-    deploy:
-      resources:
-        limits:
-          cpus: "0.35"
-          memory: "90MB"
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "0.25"
+    #       memory: "70MB"
+networks:
+  default:
+    driver: bridge
