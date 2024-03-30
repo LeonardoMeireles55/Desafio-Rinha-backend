@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface TransacaoRepository extends ReactiveCrudRepository<Transacao, Integer> {
     
-    @Query("SELECT * FROM TRANSACAO WHERE id_cliente = :cliente_fk ORDER BY realizada_em DESC")
+    @Query("SELECT * FROM TRANSACAO WHERE id_cliente = :cliente_fk ORDER BY realizada_em DESC LIMIT 10")
     Flux<RetornoTransacaoCompletaDTO> findAllByClienteIdOrderByRealizadaEm(@Param("cliente_fk") int cliente_fk);
 
     @Query("SELECT * FROM efetuar_transacao(:clienteIdParam, :tipoParam, :valorParam, :descricaoParam)")

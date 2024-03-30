@@ -11,8 +11,6 @@ import com.backend.leonardo.web.repository.TransacaoRepository;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,7 +24,6 @@ public class ClienteService {
         this.clienteRepository = clienteRepository;
         this.transacaoRepository = transacaoRepository;
     }
-        @Transactional(isolation = Isolation.SERIALIZABLE)
         public Mono<SaldoETransacoesDTO> getBalance(int id) {
 
         Mono<RecuperarSaldoDTO> saldoMono = clienteRepository.findById(id)

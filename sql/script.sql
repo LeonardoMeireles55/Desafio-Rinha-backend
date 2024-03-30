@@ -23,6 +23,7 @@ CREATE UNLOGGED TABLE TRANSACAO (
 );
 
 CREATE INDEX idx_transacao_id_cliente ON transacao (id_cliente);
+CREATE INDEX idx_cliente_id ON cliente (id);
 CREATE INDEX idx_transacao_id_cliente_realizada_em ON transacao (id_cliente, realizada_em DESC);
 
 CREATE OR REPLACE FUNCTION efetuar_transacao(
