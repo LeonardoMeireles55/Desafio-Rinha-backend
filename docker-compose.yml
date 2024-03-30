@@ -11,26 +11,36 @@ services:
       - SPRING_R2DBC_URL=r2dbc:postgresql://db:5432/rinha
       - SPRING_R2DBC_USERNAME=admin
       - SPRING_R2DBC_PASSWORD=123
+      - SPRING_MAIN_BANNER-MODE=off
+      - LOGGING_LEVEL_ROOT=OFF
+      - SPRING_THREADS_VIRTUAL_ENABLED=false
+      # - JAVA_TOOL_OPTIONS=-XX:+UseG1GC -Xms64m -Xmx128m -XX:MaxGCPauseMillis=100 -XX:G1HeapRegionSize=1M
+      - JAVA_TOOL_OPTIONS=-XX:+UseParallelGC -Xms64m -Xmx128m
+      # - JAVA_TOOL_OPTIONS=-XX:+UseZGC -Xms64m -Xmx128m
+
+      # - SPRING_MAIN_LAZY_INITIALIZATION=true
+      - SPRING.R2DBC_POOL_MAX-SIZE=10
+      - SPRING.R2DBC_POOL_MIN-IDLE=5
+
     ports:
       - "8081:8080"
     depends_on:
       - db
     deploy:
-     resources:
-       limits:
-         cpus: "0.60"
-         memory: "210MB"
-    restart: always
+      resources:
+        limits:
+          cpus: "0.60"
+          memory: "230MB"
   api02:
     <<: *api
     hostname: api02
+    deploy:
+      resources:
+        limits:
+          cpus: "0.60"
+          memory: "230MB"
     ports:
       - "8082:8080"
-    deploy:
-       resources:
-         limits:
-           cpus: "0.60"
-           memory: "210MB"
   nginx:
     image: nginx:latest
     volumes:
@@ -41,14 +51,12 @@ services:
     ports:
       - "9999:9999"
     deploy:
-     resources:
-       limits:
-         cpus: "0.15"
-         memory: "40MB"
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: "25MB"
   db:
     image: postgres:latest
-    logging:
-      driver: none
     hostname: db
     environment:
       - POSTGRES_DB=rinha
@@ -60,7 +68,10 @@ services:
     volumes:
       - ./sql/script.sql:/docker-entrypoint-initdb.d/script.sql
     deploy:
-     resources:
-       limits:
-         cpus: "0.15"
-         memory: "90MB"
+      resources:
+        limits:
+          cpus: "0.20"
+          memory: "65MB"
+networks:
+  default:
+    driver: bridge
